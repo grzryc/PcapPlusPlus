@@ -9,6 +9,8 @@
 #include <string.h>
 #include <IpUtils.h>
 
+#include "Icmpv6Layer.h"
+
 namespace pcpp
 {
 
@@ -52,6 +54,9 @@ void IPv6Layer::parseNextLayer()
 	case PACKETPP_IPPROTO_TCP:
 		m_NextLayer = new TcpLayer(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr), this, m_Packet);
 		break;
+    case PACKETPP_IPPROTO_ICMPV6:
+        m_NextLayer = new Icmpv6Layer(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr), this, m_Packet);\
+        break;
 	case PACKETPP_IPPROTO_IPIP:
 		ipVersion = *(m_Data + sizeof(ip6_hdr));
 		if (ipVersion >> 4 == 4)
