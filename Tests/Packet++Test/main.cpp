@@ -15,6 +15,7 @@
 #include <DnsLayer.h>
 #include <MplsLayer.h>
 #include <IcmpLayer.h>
+#include <Icmpv6Layer.h>
 #include <GreLayer.h>
 #include <SSLLayer.h>
 #include <DhcpLayer.h>
@@ -3426,6 +3427,106 @@ PACKETPP_TEST(IcmpEditTest)
 	PACKETPP_TEST_PASSED;
 }
 
+PACKETPP_TEST(Icmpv6ParsingTest)
+{
+	Icmpv6Layer* icmpv6Layer = NULL;
+	int buffer1Length = 0;
+	int buffer2Length = 0;
+	int buffer3Length = 0;
+	int buffer4Length = 0;
+	int buffer5Length = 0;
+	int buffer6Length = 0;
+	int buffer7Length = 0;
+	int buffer8Length = 0;
+
+	uint8_t* buffer1 = readFileIntoBuffer("PacketExamples/Icmpv6EchoRequest.dat", buffer1Length);
+	PACKETPP_ASSERT(!(buffer1 == NULL), "cannot read file Icmpv6EchoRequest.dat");
+	uint8_t* buffer2 = readFileIntoBuffer("PacketExamples/Icmpv6EchoReply.dat", buffer2Length);
+	PACKETPP_ASSERT(!(buffer2 == NULL), "cannot read file Icmpv6EchoReply.dat");
+	uint8_t* buffer3 = readFileIntoBuffer("PacketExamples/Icmpv6TimeExceeded.dat", buffer3Length);
+	PACKETPP_ASSERT(!(buffer3 == NULL), "cannot read file Icmpv6TimeExceeded.dat");
+    uint8_t* buffer4 = readFileIntoBuffer("PacketExamples/Icmpv6DestPortUnreachable.dat", buffer4Length);
+	PACKETPP_ASSERT(!(buffer4 == NULL), "cannot read file Icmpv6DestPortUnreachable.dat");
+    uint8_t* buffer5 = readFileIntoBuffer("PacketExamples/Icmpv6NeighborAdv.dat", buffer5Length);
+	PACKETPP_ASSERT(!(buffer5 == NULL), "cannot read file Icmpv6NeighborAdv.dat");
+    uint8_t* buffer6 = readFileIntoBuffer("PacketExamples/Icmpv6NeighborSol.dat", buffer6Length);
+	PACKETPP_ASSERT(!(buffer6 == NULL), "cannot read file Icmpv6NeighborSol.dat");
+    uint8_t* buffer7 = readFileIntoBuffer("PacketExamples/Icmpv6RouterAdv.dat", buffer7Length);
+	PACKETPP_ASSERT(!(buffer7 == NULL), "cannot read file Icmpv6RouterAdv.dat");
+    uint8_t* buffer8 = readFileIntoBuffer("PacketExamples/Icmpv6RouterSol.dat", buffer8Length);
+	PACKETPP_ASSERT(!(buffer8 == NULL), "cannot read file Icmpv6RouterSol.dat");
+    
+    
+	timeval time;
+	gettimeofday(&time, NULL);
+	RawPacket rawPacket1((const uint8_t*)buffer1, buffer1Length, time, true);
+	RawPacket rawPacket2((const uint8_t*)buffer2, buffer2Length, time, true);
+	RawPacket rawPacket3((const uint8_t*)buffer3, buffer3Length, time, true);
+	RawPacket rawPacket4((const uint8_t*)buffer4, buffer4Length, time, true);
+	RawPacket rawPacket5((const uint8_t*)buffer5, buffer5Length, time, true);
+	RawPacket rawPacket6((const uint8_t*)buffer6, buffer6Length, time, true);
+	RawPacket rawPacket7((const uint8_t*)buffer7, buffer7Length, time, true);
+	RawPacket rawPacket8((const uint8_t*)buffer8, buffer8Length, time, true);
+
+
+	Packet icmpv6EchoRequest(&rawPacket1);
+	Packet icmpv6EchoReply(&rawPacket2);
+    Packet icmpv6TimeExceeded(&rawPacket3);
+    Packet icmpv6DestPortUnreachable(&rawPacket4);
+    Packet icmpv6NeighborAdv(&rawPacket5);
+    Packet icmpv6NeighborSol(&rawPacket6);
+    Packet icmpv6RouterAdv(&rawPacket7);
+    Packet icmpv6RouterSol(&rawPacket8);
+
+	PACKETPP_ASSERT(icmpv6EchoRequest.isPacketOfType(ICMP) == true, "ICMP echo request isn't of type ICMP");
+	PACKETPP_ASSERT(icmpv6EchoReply.isPacketOfType(ICMP) == true, "ICMP echo reply isn't of type ICMP");
+    PACKETPP_ASSERT(icmpv6TimeExceeded.isPacketOfType(ICMP) == true, "ICMP time exceeded isn't of type ICMP");
+    PACKETPP_ASSERT(icmpv6DestPortUnreachable.isPacketOfType(ICMP) == true, "ICMP destination port unreachable isn't of type ICMP");
+    PACKETPP_ASSERT(icmpv6NeighborAdv.isPacketOfType(ICMP) == true, "ICMP Neighbor advertisement isn't of type ICMP");
+    PACKETPP_ASSERT(icmpv6NeighborSol.isPacketOfType(ICMP) == true, "ICMP neighbor solicitation isn't of type ICMP");
+    PACKETPP_ASSERT(icmpv6RouterAdv.isPacketOfType(ICMP) == true, "ICMP router advertisement isn't of type ICMP");
+    PACKETPP_ASSERT(icmpv6RouterSol.isPacketOfType(ICMP) == true, "ICMP router solicitation isn't of type ICMP");
+    
+
+	// Echo request
+	icmpv6Layer = icmpv6EchoRequest.getLayerOfType<Icmpv6Layer>();
+	PACKETPP_ASSERT(icmpv6Layer != NULL, "Couldn't retrieve ICMP echo request layer");
+	PACKETPP_ASSERT(icmpv6Layer->isMessageOfType(ICMPV6_ECHO_REQUEST) == true, "ICMP echo request isn't of type ICMP_ECHO_REQUEST");
+//	PACKETPP_ASSERT(icmpLayer->getEchoReplyData() == NULL, "Echo reply data isn't NULL for echo request");
+//	icmp_echo_request* reqData = icmpLayer->getEchoRequestData();
+//	PACKETPP_ASSERT(reqData != NULL, "Echo request data is NULL");
+//	PACKETPP_ASSERT(reqData->header->code == 0, "Echo request code isn't 0");
+//	PACKETPP_ASSERT(reqData->header->checksum == 0xb3bb, "Echo request checksum isn't 0xb3bb");
+//	PACKETPP_ASSERT(reqData->header->id == 0x3bd7, "Echo request id isn't 0x3bd7");
+//	PACKETPP_ASSERT(reqData->header->sequence == 0, "Echo request sequence isn't 0");
+//	PACKETPP_ASSERT(reqData->header->timestamp == 0xE45104007DD6A751ULL, "Echo request timestamp is wrong");
+//	PACKETPP_ASSERT(reqData->dataLength == 48, "Echo request data length isn't 48");
+//	PACKETPP_ASSERT(reqData->data[5] == 0x0d && reqData->data[43] == 0x33, "Echo request data is wrong");
+
+	// Echo reply
+	icmpv6Layer = icmpv6EchoReply.getLayerOfType<Icmpv6Layer>();
+	PACKETPP_ASSERT(icmpv6Layer != NULL, "Couldn't retrieve ICMP echo reply layer");
+	PACKETPP_ASSERT(icmpv6Layer->isMessageOfType(ICMPV6_ECHO_REPLY) == true, "ICMP echo reply isn't of type ICMP_ECHO_REPLY");
+//	PACKETPP_ASSERT(icmpLayer->getEchoRequestData() == NULL, "Echo request data isn't NULL for echo reply");
+//	icmp_echo_reply* repData = icmpLayer->getEchoReplyData();
+//	PACKETPP_ASSERT(repData != NULL, "Echo reply data is NULL");
+//	PACKETPP_ASSERT(repData->header->checksum == 0xb3c3, "Echo reply checksum isn't 0xb3c3");
+//	PACKETPP_ASSERT(repData->dataLength == 48, "Echo reply data length isn't 48");
+//	PACKETPP_ASSERT(repData->data[5] == 0x0d && reqData->data[43] == 0x33, "Echo reply data is wrong");
+
+    PACKETPP_TEST_PASSED;
+}
+
+PACKETPP_TEST(Icmpv6EditTest)
+{
+    PACKETPP_ASSERT(1==0,"implement test");
+}
+
+PACKETPP_TEST(Icmpv6CreationTest)
+{
+    PACKETPP_ASSERT(1==0,"implement test");
+}
+
 PACKETPP_TEST(GreParsingTest)
 {
 	GREv0Layer* grev0Layer = NULL;
@@ -6067,6 +6168,9 @@ int main(int argc, char* argv[]) {
 	PACKETPP_RUN_TEST(IcmpParsingTest);
 	PACKETPP_RUN_TEST(IcmpCreationTest);
 	PACKETPP_RUN_TEST(IcmpEditTest);
+	PACKETPP_RUN_TEST(Icmpv6ParsingTest);
+	PACKETPP_RUN_TEST(Icmpv6CreationTest);
+	PACKETPP_RUN_TEST(Icmpv6EditTest);
 	PACKETPP_RUN_TEST(GreParsingTest);
 	PACKETPP_RUN_TEST(GreCreationTest);
 	PACKETPP_RUN_TEST(GreEditTest);
