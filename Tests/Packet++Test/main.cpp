@@ -3455,8 +3455,8 @@ PACKETPP_TEST(Icmpv6ParsingTest)
 	PACKETPP_ASSERT(!(buffer7 == NULL), "cannot read file Icmpv6RouterAdv.dat");
     uint8_t* buffer8 = readFileIntoBuffer("PacketExamples/Icmpv6RouterSol.dat", buffer8Length);
 	PACKETPP_ASSERT(!(buffer8 == NULL), "cannot read file Icmpv6RouterSol.dat");
-    
-    
+
+        
 	timeval time;
 	gettimeofday(&time, NULL);
 	RawPacket rawPacket1((const uint8_t*)buffer1, buffer1Length, time, true);
@@ -3477,7 +3477,7 @@ PACKETPP_TEST(Icmpv6ParsingTest)
     Packet icmpv6NeighborSol(&rawPacket6);
     Packet icmpv6RouterAdv(&rawPacket7);
     Packet icmpv6RouterSol(&rawPacket8);
-
+	
 	PACKETPP_ASSERT(icmpv6EchoRequest.isPacketOfType(ICMP) == true, "ICMP echo request isn't of type ICMP");
 	PACKETPP_ASSERT(icmpv6EchoReply.isPacketOfType(ICMP) == true, "ICMP echo reply isn't of type ICMP");
     PACKETPP_ASSERT(icmpv6TimeExceeded.isPacketOfType(ICMP) == true, "ICMP time exceeded isn't of type ICMP");
@@ -3487,33 +3487,45 @@ PACKETPP_TEST(Icmpv6ParsingTest)
     PACKETPP_ASSERT(icmpv6RouterAdv.isPacketOfType(ICMP) == true, "ICMP router advertisement isn't of type ICMP");
     PACKETPP_ASSERT(icmpv6RouterSol.isPacketOfType(ICMP) == true, "ICMP router solicitation isn't of type ICMP");
     
-
+	
 	// Echo request
 	icmpv6Layer = icmpv6EchoRequest.getLayerOfType<Icmpv6Layer>();
-	PACKETPP_ASSERT(icmpv6Layer != NULL, "Couldn't retrieve ICMP echo request layer");
-	PACKETPP_ASSERT(icmpv6Layer->isMessageOfType(ICMPV6_ECHO_REQUEST) == true, "ICMP echo request isn't of type ICMP_ECHO_REQUEST");
-//	PACKETPP_ASSERT(icmpLayer->getEchoReplyData() == NULL, "Echo reply data isn't NULL for echo request");
-//	icmp_echo_request* reqData = icmpLayer->getEchoRequestData();
-//	PACKETPP_ASSERT(reqData != NULL, "Echo request data is NULL");
-//	PACKETPP_ASSERT(reqData->header->code == 0, "Echo request code isn't 0");
-//	PACKETPP_ASSERT(reqData->header->checksum == 0xb3bb, "Echo request checksum isn't 0xb3bb");
-//	PACKETPP_ASSERT(reqData->header->id == 0x3bd7, "Echo request id isn't 0x3bd7");
-//	PACKETPP_ASSERT(reqData->header->sequence == 0, "Echo request sequence isn't 0");
-//	PACKETPP_ASSERT(reqData->header->timestamp == 0xE45104007DD6A751ULL, "Echo request timestamp is wrong");
-//	PACKETPP_ASSERT(reqData->dataLength == 48, "Echo request data length isn't 48");
-//	PACKETPP_ASSERT(reqData->data[5] == 0x0d && reqData->data[43] == 0x33, "Echo request data is wrong");
+	PACKETPP_ASSERT(icmpv6Layer != NULL, "Couldn't retrieve ICMPv6 echo request layer");
+	PACKETPP_ASSERT(icmpv6Layer->isMessageOfType(ICMPV6_ECHO_REQUEST) == true, "ICMP echo request isn't of type ICMPV6_ECHO_REQUEST");
+	// @TODO change to actual headers once, they're implemented
+	icmphdr* echoReqHdr = icmpv6Layer->getIcmpv6Header();
+	PACKETPP_ASSERT(echoReqHdr != NULL, "ICMP echo request header is null");
+	PACKETPP_ASSERT(echoReqHdr->type == 128, "Echo request type isn't 128");
+	PACKETPP_ASSERT(echoReqHdr->code == 0, "Echo request code isn't 0");
+	//@TODO more assertions based on header type
 
 	// Echo reply
 	icmpv6Layer = icmpv6EchoReply.getLayerOfType<Icmpv6Layer>();
-	PACKETPP_ASSERT(icmpv6Layer != NULL, "Couldn't retrieve ICMP echo reply layer");
-	PACKETPP_ASSERT(icmpv6Layer->isMessageOfType(ICMPV6_ECHO_REPLY) == true, "ICMP echo reply isn't of type ICMP_ECHO_REPLY");
-//	PACKETPP_ASSERT(icmpLayer->getEchoRequestData() == NULL, "Echo request data isn't NULL for echo reply");
-//	icmp_echo_reply* repData = icmpLayer->getEchoReplyData();
-//	PACKETPP_ASSERT(repData != NULL, "Echo reply data is NULL");
-//	PACKETPP_ASSERT(repData->header->checksum == 0xb3c3, "Echo reply checksum isn't 0xb3c3");
-//	PACKETPP_ASSERT(repData->dataLength == 48, "Echo reply data length isn't 48");
-//	PACKETPP_ASSERT(repData->data[5] == 0x0d && reqData->data[43] == 0x33, "Echo reply data is wrong");
-
+	PACKETPP_ASSERT(icmpv6Layer != NULL, "Couldn't retrieve ICMPv6 echo reply layer");
+	PACKETPP_ASSERT(icmpv6Layer->isMessageOfType(ICMPV6_ECHO_REPLY) == true, "ICMP echo reply isn't of type ICMPV6_ECHO_REPLY");
+	// @TODO change to actual headers once, they're implemented
+	icmphdr* echoRepHdr = icmpv6Layer->getIcmpv6Header();
+	PACKETPP_ASSERT(echoRepHdr != NULL, "ICMP echo reply header is null");
+	PACKETPP_ASSERT(echoRepHdr->type == 129, "Echo reply type isn't 129");
+	PACKETPP_ASSERT(echoRepHdr->code == 0, "Echo reply code isn't 0");
+	//@TODO more assertions based on header type
+	
+	// Time exceeded
+	icmpv6Layer = icmpv6TimeExceeded.getLayerOfType<Icmpv6Layer>();
+	PACKETPP_ASSERT(icmpv6Layer != NULL, "Couldn't retrieve ICMPv6 time excceded layer");
+	PACKETPP_ASSERT(icmpv6Layer->isMessageOfType(ICMPV6_TIME_EXCEEDED) == true, "ICMP time excceded isn't of type ICMPV6_TIME_EXCEEDED");
+	// @TODO change to actual headers once, they're implemented
+	
+	// Destination port unreachable
+	icmpv6Layer = icmpv6DestPortUnreachable.getLayerOfType<Icmpv6Layer>();
+	PACKETPP_ASSERT(icmpv6Layer != NULL, "Couldn't retrieve ICMPv6 destination unreachable layer");
+	PACKETPP_ASSERT(icmpv6Layer->isMessageOfType(ICMPV6_DEST_UNREACHABLE) == true, "ICMP destination unreachable isn't of type ICMPV6_DEST_UNREACHABLE");
+	// @TODO change to actual headers once, they're implemented
+	icmphdr* destUnreachHdr = icmpv6Layer->getIcmpv6Header();
+	PACKETPP_ASSERT(destUnreachHdr != NULL, "ICMP destination unreachable header is null");
+	PACKETPP_ASSERT(destUnreachHdr->type == 1, "Destinataion unreachable type isn't 1");
+	PACKETPP_ASSERT(destUnreachHdr->code == 4, "Port unreachable code isn't 4");
+	
     PACKETPP_TEST_PASSED;
 }
 

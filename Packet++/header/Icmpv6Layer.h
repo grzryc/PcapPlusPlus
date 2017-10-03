@@ -97,14 +97,8 @@ namespace pcpp
 	class Icmpv6Layer : public Layer
 	{
 	private:
-//		icmp_echo_request m_EchoData;
-//		icmp_router_advertisement m_RouterAdvData;
 
 		bool cleanIcmpv6Layer();
-
-//		bool setEchoData(IcmpMessageType echoType, uint16_t id, uint16_t sequence, uint64_t timestamp, const uint8_t* data, size_t dataLen);
-
-//		bool setIpAndL4Layers(IPv4Layer* ipLayer, Layer* l4Layer);
 
 	public:
 		/**
@@ -125,13 +119,14 @@ namespace pcpp
 		virtual ~Icmpv6Layer() {}
 
 		/**
-		 * Get a pointer to the basic ICMP header. Notice this points directly to the data, so every change will change the actual packet data
+		 * Get a pointer to the basic ICMPv6 header (same as ICMP header).
+		 * Notice this points directly to the data, so every change will change the actual packet data
 		 * @return A pointer to the @ref icmphdr
 		 */
 		inline icmphdr* getIcmpv6Header() { return (icmphdr*)m_Data; };
 
 		/**
-		 * @return The ICMP message type
+		 * @return The ICMPv6 message type
 		 */
 		Icmpv6MessageType getMessageType();
 
@@ -146,6 +141,7 @@ namespace pcpp
 		// implement abstract methods
 
 		/**
+		 * @TODO check and implement
 		 * ICMP messages of types: ICMP_DEST_UNREACHABLE, ICMP_SOURCE_QUENCH, ICMP_TIME_EXCEEDED, ICMP_REDIRECT, ICMP_PARAM_PROBLEM
 		 * have data that contains IPv4 header and some L4 header (TCP/UDP/ICMP). This method parses these headers as separate
 		 * layers on top of the ICMP layer
@@ -153,13 +149,17 @@ namespace pcpp
 		void parseNextLayer();
 
 		/**
+		 * @TODO should ->
 		 * @return The ICMP header length. This length varies according to the ICMP message type. This length doesn't include
 		 * IPv4 and L4 headers in case ICMP message type are: ICMP_DEST_UNREACHABLE, ICMP_SOURCE_QUENCH, ICMP_TIME_EXCEEDED,
 		 * ICMP_REDIRECT, ICMP_PARAM_PROBLEM
+		 * 
+		 * @TODO returns always sizeof(icmphdr)
 		 */
 		size_t getHeaderLen();
 
 		/**
+		 * @TODO verify
 		 * Calculate ICMP checksum field
 		 */
 		void computeCalculateFields();

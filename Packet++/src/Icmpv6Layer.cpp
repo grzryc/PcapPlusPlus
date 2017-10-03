@@ -83,6 +83,9 @@ void Icmpv6Layer::parseNextLayer()
 //		if (m_DataLen - headerLen >= sizeof(iphdr))
 //			m_NextLayer = new IPv4Layer(m_Data + headerLen, m_DataLen - headerLen, this, m_Packet);
 //		return;
+	/* as a workaround for different headers (echo req, echo reply etc,
+	 * just make a payload layer with the rest of data
+	 */
 	default:
 		headerLen = getHeaderLen();
 		if (m_DataLen > headerLen)
@@ -199,9 +202,42 @@ std::string Icmpv6Layer::toString()
     case ICMPV6_MOBILE_PREFIX_SOL:
         messageTypeAsString = "Mobile prefix solicitation";
         break;
-        
-        
-    // @TODO i'm a stub, complete me
+	case ICMPV6_MOBILE_PREFIX_ADV:
+		messageTypeAsString = "Mobile prefix advertisement";
+		break;
+	case ICMPV6_CERT_PATH_SOL:
+		messageTypeAsString = "Certification path solicitaion message";
+		break;
+	case ICMPV6_CERT_PATH_ADV:
+		messageTypeAsString = "Certification path advertisement message";
+		break;
+	case ICMPV6_MULTICAST_ROUTER_ADV:
+		messageTypeAsString = "Multicast Router Advertisement";
+		break;
+	case ICMPV6_MULTICAST_ROUTER_SOL:
+		messageTypeAsString = "Multicast Router Solicitation";
+		break;
+	case ICMPV6_MULTICAST_ROUTER_TERM:
+		messageTypeAsString = "Multicast Router Termination";
+		break;
+	case ICMPV6_FIMPV6:
+		messageTypeAsString = "FMIPv6 Messages";
+		break;
+	case ICMPV6_RPL_CONTROL:
+		messageTypeAsString = "RPL Control Message";
+		break;
+	case ICMPV6_ILNPV6_LOCATOR_UPDATE:
+		messageTypeAsString = "ILNPv6 Locator Update Message";
+		break;
+	case ICMPV6_DUPLICATE_ADDR_REQUEST:
+		messageTypeAsString = "Duplicate Address Request";
+		break;
+	case ICMPV6_DUPLICATE_ADDR_CONFIRM:
+		messageTypeAsString = "Duplicate Address Confirmation";
+		break;
+	case ICMPV6_MPL_CONTROL:
+		messageTypeAsString = "MPL Control Message";
+		break;
 	default:
 		messageTypeAsString = "Unknown";
 		break;
