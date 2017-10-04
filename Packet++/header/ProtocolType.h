@@ -193,7 +193,12 @@ namespace pcpp
 		/**
 		 * SDP protocol
 		 */
-		SDP = 0x10000000
+		SDP = 0x10000000,
+		
+		/**
+		 * IPv6 Extension headers 
+		 */
+		IPv6ExtHdr = 0x20000000000
 	};
 
 

@@ -7,6 +7,7 @@
 #include <PayloadLayer.h>
 #include <IPv4Layer.h>
 #include <IPv6Layer.h>
+#include <IPv6ExtHeaderLayer.h>
 #include <ArpLayer.h>
 #include <UdpLayer.h>
 #include <TcpLayer.h>
@@ -922,6 +923,37 @@ PACKETPP_TEST(Ipv6UdpPacketParseAndCreate)
 
 	delete[] payloadData;
 
+	PACKETPP_TEST_PASSED;
+}
+
+PACKETPP_TEST(IPv6ExtHdrParse)
+{
+	int bufferLength = 0;
+	uint8_t* buffer = readFileIntoBuffer("PacketExamples/IPv6Hopopt.dat", bufferLength);
+	PACKETPP_ASSERT(!(buffer == NULL), "cannot read file");
+	
+	timeval time;
+	gettimeofday(&time, NULL);
+	RawPacket rawPacket((const uint8_t*)buffer, bufferLength, time, true);
+	
+	Packet ip6Hopopt(&rawPacket);
+	PACKETPP_ASSERT(ip6Hopopt.isPacketOfType(IPv6), "Packet isn't of type IPv6");
+	PACKETPP_ASSERT(ip6Hopopt.isPacketOfType(IPv6ExtHdr), "Packet isn't of type IPv6ExtHdr");
+	
+	IPv6ExtHeaderLayer* ip6ext = ip6Hopopt.getLayerOfType<IPv6ExtHeaderLayer>();
+	PACKETPP_ASSERT(ip6ext != NULL, "IPv6 extension header layer is null");
+
+	ip6_exthdr* extHdr = ip6ext->getIPv6ExtHeader();
+	PACKETPP_ASSERT(extHdr != NULL, "IPv6 extension header is NULL");
+	PACKETPP_ASSERT(extHdr->extHeaderLen == 0, "extHeaderLen is not 0");
+	
+//	PACKETPP_ASSERT( 1==0, "Implement proper tests");
+	PACKETPP_TEST_PASSED;
+}
+
+PACKETPP_TEST(IPv6ExtHdrCreate)
+{
+	PACKETPP_ASSERT( 1==0, "Implement test");
 	PACKETPP_TEST_PASSED;
 }
 
@@ -6039,6 +6071,8 @@ int main(int argc, char* argv[]) {
 	PACKETPP_RUN_TEST(Ipv4OptionsEditTest);
 	PACKETPP_RUN_TEST(Ipv4UdpChecksum);
 	PACKETPP_RUN_TEST(Ipv6UdpPacketParseAndCreate);
+	PACKETPP_RUN_TEST(IPv6ExtHdrParse);
+	PACKETPP_RUN_TEST(IPv6ExtHdrCreate);
 	PACKETPP_RUN_TEST(TcpPacketNoOptionsParsing);
 	PACKETPP_RUN_TEST(TcpPacketWithOptionsParsing);
 	PACKETPP_RUN_TEST(TcpPacketWithOptionsParsing2);
