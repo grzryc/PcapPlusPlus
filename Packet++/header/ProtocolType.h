@@ -193,7 +193,12 @@ namespace pcpp
 		/**
 		 * SDP protocol
 		 */
-		SDP = 0x10000000
+		SDP = 0x10000000,
+		
+		/**
+		 * ICMPv6 protocol
+		 */
+		ICMPv6 = 0x10000000000
 	};
 
 

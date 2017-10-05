@@ -23,7 +23,7 @@ Icmpv6Layer::Icmpv6Layer() : Layer()
 	m_DataLen = sizeof(icmphdr);
 	m_Data = new uint8_t[m_DataLen];
 	memset(m_Data, 0, m_DataLen);
-	m_Protocol = ICMP;
+	m_Protocol = ICMPv6;
 }
 
 Icmpv6MessageType Icmpv6Layer::getMessageType()
