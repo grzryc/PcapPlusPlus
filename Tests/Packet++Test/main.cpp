@@ -3478,14 +3478,14 @@ PACKETPP_TEST(Icmpv6ParsingTest)
     Packet icmpv6RouterAdv(&rawPacket7);
     Packet icmpv6RouterSol(&rawPacket8);
 	
-	PACKETPP_ASSERT(icmpv6EchoRequest.isPacketOfType(ICMP) == true, "ICMP echo request isn't of type ICMP");
-	PACKETPP_ASSERT(icmpv6EchoReply.isPacketOfType(ICMP) == true, "ICMP echo reply isn't of type ICMP");
-    PACKETPP_ASSERT(icmpv6TimeExceeded.isPacketOfType(ICMP) == true, "ICMP time exceeded isn't of type ICMP");
-    PACKETPP_ASSERT(icmpv6DestPortUnreachable.isPacketOfType(ICMP) == true, "ICMP destination port unreachable isn't of type ICMP");
-    PACKETPP_ASSERT(icmpv6NeighborAdv.isPacketOfType(ICMP) == true, "ICMP Neighbor advertisement isn't of type ICMP");
-    PACKETPP_ASSERT(icmpv6NeighborSol.isPacketOfType(ICMP) == true, "ICMP neighbor solicitation isn't of type ICMP");
-    PACKETPP_ASSERT(icmpv6RouterAdv.isPacketOfType(ICMP) == true, "ICMP router advertisement isn't of type ICMP");
-    PACKETPP_ASSERT(icmpv6RouterSol.isPacketOfType(ICMP) == true, "ICMP router solicitation isn't of type ICMP");
+	PACKETPP_ASSERT(icmpv6EchoRequest.isPacketOfType(ICMPv6) == true, "ICMP echo request isn't of type ICMPv6");
+	PACKETPP_ASSERT(icmpv6EchoReply.isPacketOfType(ICMPv6) == true, "ICMP echo reply isn't of type ICMPv6");
+    PACKETPP_ASSERT(icmpv6TimeExceeded.isPacketOfType(ICMPv6) == true, "ICMP time exceeded isn't of type ICMPv6");
+    PACKETPP_ASSERT(icmpv6DestPortUnreachable.isPacketOfType(ICMPv6) == true, "ICMP destination port unreachable isn't of type ICMPv6");
+    PACKETPP_ASSERT(icmpv6NeighborAdv.isPacketOfType(ICMPv6) == true, "ICMP Neighbor advertisement isn't of type ICMPv6");
+    PACKETPP_ASSERT(icmpv6NeighborSol.isPacketOfType(ICMPv6) == true, "ICMP neighbor solicitation isn't of type ICMPv6");
+    PACKETPP_ASSERT(icmpv6RouterAdv.isPacketOfType(ICMPv6) == true, "ICMP router advertisement isn't of type ICMPv6");
+    PACKETPP_ASSERT(icmpv6RouterSol.isPacketOfType(ICMPv6) == true, "ICMP router solicitation isn't of type ICMPv6");
     
 	
 	// Echo request
