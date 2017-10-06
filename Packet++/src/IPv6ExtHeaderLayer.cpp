@@ -6,6 +6,8 @@
 #include <TcpLayer.h>
 #include <GreLayer.h>
 #include <Icmpv6Layer.h>
+#include <IPv6Layer.h>
+#include <IPv4Layer.h>
 #include <string.h>
 #include <IpUtils.h>
 
@@ -46,37 +48,40 @@ void IPv6ExtHeaderLayer::parseNextLayer()
 	case PACKETPP_IPPROTO_FRAGMENT:
 	case PACKETPP_IPPROTO_AH:
 	case PACKETPP_IPPROTO_DSTOPTS:
-		m_NextLayer = new IPv6ExtHeaderLayer(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr), this, m_Packet);
+		m_NextLayer = new IPv6ExtHeaderLayer(m_Data + getHeaderLen(), m_DataLen - getHeaderLen(), this, m_Packet);
 		break;
 	case PACKETPP_IPPROTO_UDP:
-		m_NextLayer = new UdpLayer(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr), this, m_Packet);
+		m_NextLayer = new UdpLayer(m_Data + getHeaderLen(), m_DataLen - getHeaderLen(), this, m_Packet);
 		break;
 	case PACKETPP_IPPROTO_TCP:
-		m_NextLayer = new TcpLayer(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr), this, m_Packet);
+		m_NextLayer = new TcpLayer(m_Data + getHeaderLen(), m_DataLen - getHeaderLen(), this, m_Packet);
 		break;
     case PACKETPP_IPPROTO_ICMPV6:
-        m_NextLayer = new Icmpv6Layer(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr), this, m_Packet);\
+        m_NextLayer = new Icmpv6Layer(m_Data + getHeaderLen(), m_DataLen - getHeaderLen(), this, m_Packet);
         break;
+	case PACKETPP_IPPROTO_IPV6:
+		m_NextLayer = new IPv6Layer(m_Data + getHeaderLen(), m_DataLen - getHeaderLen(), this, m_Packet);
+		break;
 	case PACKETPP_IPPROTO_IPIP:
-		ipVersion = *(m_Data + sizeof(ip6_hdr));
+		ipVersion = *(m_Data + getHeaderLen());
 		if (ipVersion >> 4 == 4)
-			m_NextLayer = new IPv4Layer(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr), this, m_Packet);
+			m_NextLayer = new IPv4Layer(m_Data + getHeaderLen(), m_DataLen - getHeaderLen(), this, m_Packet);
 		else if (ipVersion >> 4 == 6)
-			m_NextLayer = new IPv6ExtHeaderLayer(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr), this, m_Packet);
+			m_NextLayer = new IPv6Layer(m_Data + getHeaderLen(), m_DataLen - getHeaderLen(), this, m_Packet);
 		else
-			m_NextLayer = new PayloadLayer(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr), this, m_Packet);
+			m_NextLayer = new PayloadLayer(m_Data + getHeaderLen(), m_DataLen - getHeaderLen(), this, m_Packet);
 		break;
 	case PACKETPP_IPPROTO_GRE:
-		greVer = GreLayer::getGREVersion(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr));
+		greVer = GreLayer::getGREVersion(m_Data + getHeaderLen(), m_DataLen - getHeaderLen());
 		if (greVer == GREv0)
-			m_NextLayer = new GREv0Layer(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr), this, m_Packet);
+			m_NextLayer = new GREv0Layer(m_Data + getHeaderLen(), m_DataLen - getHeaderLen(), this, m_Packet);
 		else if (greVer == GREv1)
-			m_NextLayer = new GREv1Layer(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr), this, m_Packet);
+			m_NextLayer = new GREv1Layer(m_Data + getHeaderLen(), m_DataLen - getHeaderLen(), this, m_Packet);
 		else
-			m_NextLayer = new PayloadLayer(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr), this, m_Packet);
+			m_NextLayer = new PayloadLayer(m_Data + getHeaderLen(), m_DataLen - getHeaderLen(), this, m_Packet);
 		break;
 	default:
-		m_NextLayer = new PayloadLayer(m_Data + sizeof(ip6_hdr), m_DataLen - sizeof(ip6_hdr), this, m_Packet);
+		m_NextLayer = new PayloadLayer(m_Data + getHeaderLen(), m_DataLen - getHeaderLen(), this, m_Packet);
 		return;
 	}
 }
