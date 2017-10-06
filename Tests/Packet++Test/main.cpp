@@ -928,24 +928,41 @@ PACKETPP_TEST(Ipv6UdpPacketParseAndCreate)
 
 PACKETPP_TEST(IPv6ExtHdrParse)
 {
-	int bufferLength = 0;
-	uint8_t* buffer = readFileIntoBuffer("PacketExamples/IPv6Hopopt.dat", bufferLength);
-	PACKETPP_ASSERT(!(buffer == NULL), "cannot read file");
+	int buffer1Length = 0;
+	int buffer2Length = 0;
+	
+	uint8_t* buffer1 = readFileIntoBuffer("PacketExamples/IPv6Hopopt.dat", buffer1Length);
+	PACKETPP_ASSERT(!(buffer1 == NULL), "cannot read file IPv6Hopopt.dat");
+	uint8_t* buffer2 = readFileIntoBuffer("PacketExamples/IPv6RoutingHeader.dat", buffer2Length);
+	PACKETPP_ASSERT(!(buffer2 == NULL), "cannot read file IPv6RoutingHeader.dat");
 	
 	timeval time;
 	gettimeofday(&time, NULL);
-	RawPacket rawPacket((const uint8_t*)buffer, bufferLength, time, true);
+	RawPacket rawPacket1((const uint8_t*)buffer1, buffer1Length, time, true);
+	RawPacket rawPacket2((const uint8_t*)buffer2, buffer2Length, time, true);
 	
-	Packet ip6Hopopt(&rawPacket);
-	PACKETPP_ASSERT(ip6Hopopt.isPacketOfType(IPv6), "Packet isn't of type IPv6");
-	PACKETPP_ASSERT(ip6Hopopt.isPacketOfType(IPv6ExtHdr), "Packet isn't of type IPv6ExtHdr");
+	Packet ip6Hopopt(&rawPacket1);
+	Packet ip6Routing(&rawPacket2);
 	
-	IPv6ExtHeaderLayer* ip6ext = ip6Hopopt.getLayerOfType<IPv6ExtHeaderLayer>();
-	PACKETPP_ASSERT(ip6ext != NULL, "IPv6 extension header layer is null");
-
-	ip6_exthdr* extHdr = ip6ext->getIPv6ExtHeader();
-	PACKETPP_ASSERT(extHdr != NULL, "IPv6 extension header is NULL");
-	PACKETPP_ASSERT(extHdr->extHeaderLen == 0, "extHeaderLen is not 0");
+	PACKETPP_ASSERT(ip6Hopopt.isPacketOfType(IPv6), "Hopopt packet isn't of type IPv6");
+	PACKETPP_ASSERT(ip6Hopopt.isPacketOfType(IPv6ExtHdr), "Hopopt packet isn't of type IPv6ExtHdr");
+	PACKETPP_ASSERT(ip6Routing.isPacketOfType(IPv6), "Routing packet isn't of type IPv6");
+	PACKETPP_ASSERT(ip6Routing.isPacketOfType(IPv6ExtHdr), "Routing packet isn't of type IPv6ExtHdr");
+	PACKETPP_ASSERT(ip6Routing.isPacketOfType(TCP), "Routing packet isn't of type TCP");
+	
+	IPv6ExtHeaderLayer* hopoptLayer = ip6Hopopt.getLayerOfType<IPv6ExtHeaderLayer>();
+	PACKETPP_ASSERT(hopoptLayer != NULL, "IPv6 Hopopt extension header layer is null");
+	PACKETPP_ASSERT(hopoptLayer->getHeaderLen() == 8, "IPv6 Hopopt header len isn't of size 8");
+	ip6_exthdr* hopoptExtHdr = hopoptLayer->getIPv6ExtHeader();
+	PACKETPP_ASSERT(hopoptExtHdr != NULL, "IPv6 Hopopt extension header is NULL");
+	PACKETPP_ASSERT(hopoptExtHdr->extHeaderLen == 0, "extHeaderLen is not 0");
+	
+	IPv6ExtHeaderLayer* routingLayer = ip6Routing.getLayerOfType<IPv6ExtHeaderLayer>();
+	PACKETPP_ASSERT(routingLayer != NULL, "IPv6 routing extension header layer is null");
+	PACKETPP_ASSERT(routingLayer->getHeaderLen() == 56, "IPv6 routing header isn't of size 56");
+	ip6_exthdr* routingExtHdr = routingLayer->getIPv6ExtHeader();
+	PACKETPP_ASSERT(routingExtHdr != NULL, "IPv6 routing extension header is NULL");
+	PACKETPP_ASSERT(routingExtHdr->extHeaderLen == 6, "extHeaderLen is not 6");
 	
 //	PACKETPP_ASSERT( 1==0, "Implement proper tests");
 	PACKETPP_TEST_PASSED;
