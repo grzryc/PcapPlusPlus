@@ -13,7 +13,7 @@ namespace pcpp
 	/**
 	 * An enum representing all protocols supported by PcapPlusPlus
 	 */
-	enum ProtocolType
+	enum ProtocolType : uint64_t
 	{
 		/**
 		 * Unknown protocol (or unsupported by PcapPlusPlus)
@@ -200,8 +200,8 @@ namespace pcpp
 		 */
 		ICMPv6 = 0x10000000000,
 				
-		 /*
-		  * IPv6 Extension headers 
+		/**
+		 * IPv6 Extension headers 
 		  */
 		IPv6ExtHdr = 0x20000000000
 

@@ -44,16 +44,6 @@ namespace pcpp
 		uint8_t ipDst[16];
 	};
 #pragma pack(pop)
-	
-#pragma pack(push, 1)
-	struct ip6_ext_hdr {
-		/** Specifies the type of the next header (protocol). Must be one of ::IPProtocolTypes */
-		uint8_t nextHeader;
-		/** Length of the extention header in 8-octet units, not including the first 8 octets. */
-		uint8_t hdrExtLen;
-	};
-#pragma pack(pop)
-
 
 	/**
 	 * @class IPv6Layer
