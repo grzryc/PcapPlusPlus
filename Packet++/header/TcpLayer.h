@@ -398,6 +398,12 @@ namespace pcpp
 		std::string toString();
 
 		OsiModelLayer getOsiModelLayer() { return OsiModelTransportLayer; }
+		
+		/**
+		 * @return corrected payload size
+		 * known bug in getLayerPayloadSize() sees ETH padding as payload
+		 */
+		size_t getTcpPayloadSize();
 
 	private:
 

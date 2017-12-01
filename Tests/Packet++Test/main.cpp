@@ -1022,6 +1022,31 @@ PACKETPP_TEST(TcpPacketNoOptionsParsing)
 	PACKETPP_TEST_PASSED;
 }
 
+PACKETPP_TEST(TcpPacketWithEtHPaddingParsing)
+{
+	int bufferLength = 0;
+	uint8_t* buffer = readFileIntoBuffer("PacketExamples/Tcp-EthPadding.dat", bufferLength);
+	PACKETPP_ASSERT(!(buffer == NULL), "cannot read file");
+
+	timeval time;
+	gettimeofday(&time, NULL);
+	RawPacket rawPacket((const uint8_t*)buffer, bufferLength, time, true);
+
+	Packet tcpPaketNoOptions(&rawPacket);
+	PACKETPP_ASSERT(tcpPaketNoOptions.isPacketOfType(IPv4), "Packet isn't of type IPv4");
+	PACKETPP_ASSERT(tcpPaketNoOptions.isPacketOfType(TCP), "Packet isn't of type TCP");
+	TcpLayer* tcpLayer = NULL;
+	PACKETPP_ASSERT((tcpLayer = tcpPaketNoOptions.getLayerOfType<TcpLayer>()) != NULL, "TCP layer is NULL");
+
+	PACKETPP_ASSERT(tcpLayer->getTcpPayloadSize() == 0, "Tcp payload size != 0, it's ");//%z", tcpLayer->getTcpPayloadSize());
+	PACKETPP_ASSERT(tcpLayer->getLayerPayloadSize() == 6, "Layer payload size != 6, it's ");//%z", tcpLayer->getLayerPayloadSize());
+	
+	Layer* afterTcpLayer = tcpLayer->getNextLayer();
+	PACKETPP_ASSERT(afterTcpLayer == NULL, "Layer after TCP is not NULL");
+
+	PACKETPP_TEST_PASSED;
+}
+
 PACKETPP_TEST(TcpPacketWithOptionsParsing)
 {
 	int bufferLength = 0;
@@ -6204,6 +6229,7 @@ int main(int argc, char* argv[]) {
 	PACKETPP_RUN_TEST(IPv6ExtHdrParse);
 	PACKETPP_RUN_TEST(IPv6ExtHdrCreate);
 	PACKETPP_RUN_TEST(TcpPacketNoOptionsParsing);
+	PACKETPP_RUN_TEST(TcpPacketWithEtHPaddingParsing);
 	PACKETPP_RUN_TEST(TcpPacketWithOptionsParsing);
 	PACKETPP_RUN_TEST(TcpPacketWithOptionsParsing2);
 	PACKETPP_RUN_TEST(TcpPacketCreation);

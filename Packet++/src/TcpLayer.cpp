@@ -384,4 +384,11 @@ std::string TcpLayer::toString()
 	return result;
 }
 
+size_t TcpLayer::getTcpPayloadSize() {
+	auto ip4_layer = dynamic_cast<IPv4Layer*>(getPrevLayer());
+	if(!ip4_layer)
+		return getLayerPayloadSize();
+	return ntohs(ip4_layer->getIPv4Header()->totalLength) - ip4_layer->getHeaderLen() - this->getHeaderLen();
+}
+
 } // namespace pcpp
